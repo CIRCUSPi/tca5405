@@ -2,9 +2,10 @@
 #define _TCA5405_H_
 #include <Arduino.h>
 
-#define TCA5405_DEFAULT_OUTPUT      0b00001110
-#define TCA5405_TRAN_DELAY_CYCLE    34 //for in range 34 NOP equals 1us
-#define TCA5405_TRAN_DELAY          for(int i=0;i<dcycle;i++){NOP();}
+#define TCA5405_DEFAULT_OUTPUT      0b00011111
+#define TCA5405_DEFAULT_CYCLE       34 //for in range 34 NOP equals 1us
+#define TCA5405_TRAN_DELAY          for(int i=0;i<_cycle;i++){NOP();}
+// #define TCA5405_TRAN_DELAY          delayMicroseconds(2)
 
 typedef enum {
   TCQ5405_Q0=0,
@@ -30,13 +31,13 @@ typedef enum {
 class TCA5405 {
 private:
   // output level for Q0~Q4, LSB first
-  uint8_t   output = TCA5405_DEFAULT_OUTPUT;
+  uint8_t   _output = TCA5405_DEFAULT_OUTPUT;
   // delay cycle
-  uint8_t   dcycle = TCA5405_TRAN_DELAY_CYCLE;
+  uint8_t   _cycle = TCA5405_DEFAULT_CYCLE;
   // TCA5405 input pin
-  uint8_t   din_pin = PIXELBIT_TCA5405_INPUT;
+  uint8_t   _pin = PIXELBIT_TCA5405_INPUT;
 public:
-  int8_t    init(uint8_t pin = PIXELBIT_TCA5405_INPUT, uint8_t delay_cycle = TCA5405_TRAN_DELAY_CYCLE);
+  int8_t    init(uint8_t pin = PIXELBIT_TCA5405_INPUT, uint8_t output = TCA5405_DEFAULT_OUTPUT);
   int8_t    set_gpo(TCA5405_GPO gpo, int level);
   int8_t    transmit();
 };
