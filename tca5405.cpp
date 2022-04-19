@@ -1,10 +1,16 @@
 #include "tca5405.h"
+#include <esp_idf_version.h>
 
 portMUX_TYPE TCA5405_interrupt_mux = portMUX_INITIALIZER_UNLOCKED;
 
 int8_t TCA5405::transmit()
 {
+#if ESP_IDF_VERSION_MAJOR >= 4
   taskENTER_CRITICAL(&TCA5405_interrupt_mux);
+#elif ESP_IDF_VERSION_MAJOR <= 3
+  portENTER_CRITICAL(&TCA5405_interrupt_mux);
+#endif
+
   // 2 cycle square wave for ramp up. low first
   digitalWrite(_pin, LOW);
   TCA5405_TRAN_DELAY;
@@ -26,7 +32,12 @@ int8_t TCA5405::transmit()
   digitalWrite(_pin, _TCA5405_GET_BIT(_output, 0));
   TCA5405_TRAN_DELAY;
   digitalWrite(_pin, HIGH);
+  
+#if ESP_IDF_VERSION_MAJOR >= 4
   taskEXIT_CRITICAL(&TCA5405_interrupt_mux);
+#elif ESP_IDF_VERSION_MAJOR <= 3
+  portEXIT_CRITICAL(&TCA5405_interrupt_mux);
+#endif
   
   return 0;
 }
